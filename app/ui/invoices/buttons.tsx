@@ -2,7 +2,7 @@
 
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { deleteInvoice } from '@/app/lib/actions';
+import { deleteInvoice, State } from '@/app/lib/actions';
 import { useFormState } from 'react-dom';
 
 
@@ -31,7 +31,7 @@ export function UpdateInvoice({ id }: { id: string }) {
 
 
 export function DeleteInvoice({ id }: { id: string }) {
-  const initialState = { message: null, errors: {} };
+  const initialState: State = { message: null, errors: {} };
   const deleteInvoiceWithId = deleteInvoice.bind(null, id);
   const [state, dispatch] = useFormState(deleteInvoiceWithId, initialState);
  

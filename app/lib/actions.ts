@@ -76,11 +76,28 @@ export async function createInvoice(prevState: State, formData: FormData) {
 
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
+export async function deleteInvoice(
+  id: string,
+  prevState: State,
+  formData: FormData,
+): Promise<State> { // Esta linha já está correta, mas o problema está na função updateInvoice
+  try {
+    await sql`DELETE FROM invoices WHERE id = ${id}`;
+    revalidatePath('/dashboard/invoices');
+    return { message: 'Deleted Invoice.', errors: {} }; // Retorna uma mensagem de sucesso
+  } catch (error) {
+    return {
+      message: 'Database Error: Failed to Delete Invoice.',
+      errors: {},
+    };
+  }
+}
+
 export async function updateInvoice(
   id: string,
   prevState: State,
   formData: FormData,
-) {
+): Promise<State> { // Adicionar o tipo de retorno aqui também
   const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -104,20 +121,14 @@ export async function updateInvoice(
       WHERE id = ${id}
     `;
   } catch (error) {
-    return { message: 'Database Error: Failed to Update Invoice.' };
+    return {
+      message: 'Database Error: Failed to Update Invoice.',
+      errors: {}, // Adicionar a propriedade errors
+    };
   }
  
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
-}
-
-export async function deleteInvoice(id: string) {
-  try {
-    await sql`DELETE FROM invoices WHERE id = ${id}`;
-    revalidatePath('/dashboard/invoices');
-  } catch (error) {
-    return { message: 'Database Error: Failed to Delete Invoice.' };
-  }
 }
 
 export async function authenticate(
